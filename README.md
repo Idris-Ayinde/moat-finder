@@ -48,6 +48,19 @@ cp .env.example .env   # optional: add FMP_API_KEY and SEC_USER_AGENT (your cont
 
 The first full run takes about 10–20 minutes (it's rate-limited to be polite to each site). Later runs use the cache.
 
+### Getting the latest results
+
+The daily GitHub workflow commits fresh results to GitHub, not to your computer. Pull them before starting the app:
+
+```bash
+cd ~/Desktop/claude/stock_tracker
+git pull                                # download the latest data/results.csv
+.venv/bin/streamlit run app.py          # open the dashboard at http://localhost:8501
+```
+
+If you ran a screen locally, your `data/results.csv` will differ from GitHub's. Discard it first with
+`git checkout data/results.csv`, then `git pull`.
+
 ## Scoring (0–100)
 
 | Principle | Criterion | Weight |
