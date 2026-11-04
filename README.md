@@ -61,6 +61,13 @@ git pull                                # download the latest data/results.csv
 If you ran a screen locally, your `data/results.csv` will differ from GitHub's. Discard it first with
 `git checkout data/results.csv`, then `git pull`.
 
+### Hosting
+
+The app runs on Streamlit Community Cloud for free: sign in at share.streamlit.io with GitHub, choose this repo,
+branch `main` and `app.py`. It redeploys on every commit, so the daily workflow's results appear on their own.
+When hosted, the sidebar hides "Run screen" (data comes only from the workflow). Community Cloud is detected
+automatically; on other hosts set the environment variable `MOAT_FINDER_HOSTED=1`.
+
 ## Scoring (0–100)
 
 | Principle | Criterion | Weight |

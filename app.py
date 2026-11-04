@@ -3,6 +3,7 @@ import base64
 import re
 import html
 import json
+import os
 import random
 from pathlib import Path
 
@@ -21,6 +22,10 @@ from buffett.scoring import CAPITAL_HEAVY, FINANCIALS, MAX_HISTORY_YEARS
 from buffett.sources.google_finance import google_symbol
 
 APP_NAME = "Moat Finder"
+# Streamlit Community Cloud runs apps from /mount/src (set MOAT_FINDER_HOSTED=1 on other hosts). There the data
+# comes from the daily GitHub workflow: a screen started from the browser would run on shared servers that data
+# sites throttle, and its results would be lost when the app restarts.
+HOSTED = Path(__file__).resolve().is_relative_to("/mount/src") or bool(os.environ.get("MOAT_FINDER_HOSTED"))
 st.set_page_config(page_title=APP_NAME, page_icon=str(Path(__file__).parent / "assets" / "logo.svg"), layout="wide")
 
 # Chart and card colours (light and dark steps of the same palette).
@@ -760,7 +765,8 @@ def sidebar(df: pd.DataFrame | None) -> dict:
     with st.sidebar:
         st.markdown("<div class='mf-tagline'>Great businesses at sensible prices</div>", unsafe_allow_html=True)
         if df is None:
-            refresh_controls(expanded=True)
+            if not HOSTED:
+                refresh_controls(expanded=True)
             return filters
         live_badge(df)
         st.write("")
@@ -788,7 +794,8 @@ def sidebar(df: pd.DataFrame | None) -> dict:
         st.write("")
         with st.expander("📡 Data health"):
             data_health(df)
-        refresh_controls(expanded=False)
+        if not HOSTED:
+            refresh_controls(expanded=False)
     return filters
 
 
@@ -809,7 +816,8 @@ def main() -> None:
     df = load_results()
     filters = sidebar(df)
     if df is None:
-        st.info("No results yet. Choose countries in the sidebar and click **Run screen**.")
+        st.info("No results yet. They're refreshed daily; check back soon." if HOSTED
+                else "No results yet. Choose countries in the sidebar and click **Run screen**.")
         guide_tab()
         return
     with st.expander("New here? How to read this page"):
